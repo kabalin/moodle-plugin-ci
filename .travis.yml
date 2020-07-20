@@ -39,51 +39,10 @@ script:
   - make test-phpunit
 
   # This is basically "integration" testing.
-  - moodle-plugin-ci phplint
-  - moodle-plugin-ci phpcpd
-  - moodle-plugin-ci phpmd
-  - moodle-plugin-ci codechecker
-  - moodle-plugin-ci validate
-  - moodle-plugin-ci savepoints
-  - moodle-plugin-ci mustache
-  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" != 'master' -a "$MOODLE_BRANCH" != 'MOODLE_39_STABLE' ]
-  - moodle-plugin-ci phpdoc
-  - moodle-plugin-ci phpunit --coverage-text
-  - moodle-plugin-ci behat --profile default
-  - moodle-plugin-ci behat --profile chrome
+  - moodle-plugin-ci behat --profile default -vvv
+  - moodle-plugin-ci behat --profile chrome -vvv
 
 jobs:
   include:
-    - stage: Tests
-      php: 7.3
-      before_install: skip
-      install:
-        - make init
-      script:
-        - make validate
-    - stage: Integration tests
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_39_STABLE
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_38_STABLE
-    - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_37_STABLE
-    - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_35_STABLE
     - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_35_STABLE
-    - stage: Deploy
-      before_install: skip
-      install: skip
-      script: skip
-      before_deploy:
-        - make build/moodle-plugin-ci.phar
-        - php build/moodle-plugin-ci.phar list
-      deploy:
-        provider: releases
-        token: $GITHUB_OAUTH_ENCRYPTED_TOKEN
-        file: build/moodle-plugin-ci.phar
-        cleanup: false
-        on:
-          repo: moodlehq/moodle-plugin-ci
-          tags: true
+      env: MOODLE_BRANCH=MOODLE_34_STABLE
