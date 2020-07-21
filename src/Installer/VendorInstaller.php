@@ -38,17 +38,29 @@ class VendorInstaller extends AbstractInstaller
     private $execute;
 
     /**
+     * @var string
+     */
+    public $nodeVer;
+
+    /**
      * Define legacy Node version to use when .nvmrc is absent (Moodle < 3.5).
      *
      * @var string
      */
     private $legacyNodeVersion = 'lts/carbon';
 
-    public function __construct(Moodle $moodle, MoodlePlugin $plugin, Execute $execute)
+    /**
+     * @param Moodle       $moodle
+     * @param MoodlePlugin $plugin
+     * @param Execute      $execute
+     * @param string       $nodeVer
+     */
+    public function __construct(Moodle $moodle, MoodlePlugin $plugin, Execute $execute, $nodeVer)
     {
         $this->moodle  = $moodle;
         $this->plugin  = $plugin;
         $this->execute = $execute;
+        $this->nodeVer = $nodeVer;
     }
 
     public function install()
@@ -106,11 +118,16 @@ class VendorInstaller extends AbstractInstaller
      */
     public function canInstallNode()
     {
-        if (is_file($this->moodle->directory.'/.nvmrc')) {
+        if (!empty($this->nodeVer)) {
+            // Use Node version specified by user.
+            $reqversion = $this->nodeVer."\n";
+            file_put_contents($this->moodle->directory.'/.nvmrc', $reqversion);
+        } elseif (is_file($this->moodle->directory.'/.nvmrc')) {
+            // Use Node version defined in .nvmrc.
             $reqversion = file_get_contents($this->moodle->directory.'/.nvmrc');
         } else {
             // No .nvmrc found, we likely deal with Moodle < 3.5. Use legacy version (lts/carbon).
-            $reqversion = $this->legacyNodeVersion;
+            $reqversion = $this->legacyNodeVersion."\n";
             file_put_contents($this->moodle->directory.'/.nvmrc', $reqversion);
         }
 
