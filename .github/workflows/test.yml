@@ -57,10 +57,16 @@ jobs:
             moodle-branch: 'MOODLE_39_STABLE'
           - php: '7.4'
             moodle-branch: 'MOODLE_38_STABLE'
+          - php: '7.3'
+            moodle-branch: 'MOODLE_37_STABLE'
+          - php: '7.3'
+            moodle-branch: 'MOODLE_36_STABLE'
           - php: '7.2'
             moodle-branch: 'MOODLE_35_STABLE'
           - php: '7.0'
             moodle-branch: 'MOODLE_35_STABLE'
+          - php: '7.2'
+            moodle-branch: 'MOODLE_34_STABLE'
 
     steps:
     - name: Check out repository code
@@ -82,6 +88,8 @@ jobs:
         echo "TRAVIS_BUILD_DIR="$(cd ../moodle-local_travis; pwd) >> $GITHUB_ENV
         # PHPUnit depends on en_AU.UTF-8 locale
         sudo locale-gen en_AU.UTF-8
+        # Define NVM_DIR pointing to nvm installation.
+        echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
     - name: Install moodle-plugin-ci
       run: moodle-plugin-ci install -vvv
