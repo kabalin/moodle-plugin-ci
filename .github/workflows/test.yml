@@ -3,8 +3,17 @@ name: Moodle Plugin CI
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
+  nvmtest:
+    name: nvm version test
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Check if we have nvm here.
+      run: |
+        source "$NVM_DIR/nvm.sh" && nvm --version
+
   selftest:
     name: CI test (make validate)
+    needs: nvmtest
     runs-on: ubuntu-22.04
 
     steps:
