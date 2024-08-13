@@ -9,7 +9,8 @@ jobs:
     steps:
     - name: Check if we have nvm here.
       run: |
-        source "$NVM_DIR/nvm.sh" && nvm --version
+        echo $NVM_DIR
+        source ~/.nvm/nvm.sh && nvm --version
 
   selftest:
     name: CI test (make validate)
