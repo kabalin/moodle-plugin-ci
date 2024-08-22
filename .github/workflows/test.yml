@@ -5,7 +5,7 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   selftest:
     name: CI test (make validate)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Check out repository code
@@ -28,7 +28,7 @@ jobs:
   coverage:
     if: github.repository == 'moodlehq/moodle-plugin-ci'
     name: Code coverage (codecov)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Check out repository code
@@ -58,7 +58,7 @@ jobs:
   citest:
     name: Integration tests
     needs: selftest
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
@@ -153,7 +153,7 @@ jobs:
   buildphar:
     name: Build moodle-plugin-ci.phar
     needs: selftest
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Check out repository code
@@ -179,7 +179,7 @@ jobs:
   phartest:
     name: Integration tests (PHAR)
     needs: buildphar
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
@@ -275,7 +275,7 @@ jobs:
   selfupdatetest:
     name: SelfUpdate tests (PHAR)
     needs: buildphar
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       lowest_release: '4.1.8'
 

@@ -15,6 +15,7 @@ namespace MoodlePluginCI\Installer;
 use MoodlePluginCI\Bridge\Moodle;
 use MoodlePluginCI\Bridge\MoodlePlugin;
 use MoodlePluginCI\Process\Execute;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 /**
@@ -112,15 +113,16 @@ class VendorInstaller extends AbstractInstaller
      */
     public function installNvm(): void
     {
-        $cmd     = 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash';
+        $nvmDir  = "{$this->moodle->directory}/.nvm";
+        (new Filesystem())->mkdir($nvmDir);
+        $cmd     = "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | NVM_DIR={$nvmDir} bash";
         $process = $this->execute->passThroughProcess(
             Process::fromShellCommandline($cmd, $this->moodle->directory, null, null, null)
         );
         if (!$process->isSuccessful()) {
             throw new \RuntimeException('nvm installation failed.');
         }
-        $home = getenv('HOME');
-        putenv("NVM_DIR={$home}/.nvm");
+        putenv("NVM_DIR={$nvmDir}");
     }
 
     /**
@@ -154,7 +156,7 @@ class VendorInstaller extends AbstractInstaller
         }
 
         $nvmDir  = getenv('NVM_DIR');
-        $cmd     = ". $nvmDir/nvm.sh && nvm install && nvm use && echo \"NVM_BIN=\$NVM_BIN\"";
+        $cmd     = ". $nvmDir/nvm.sh; nvm install && nvm use && echo \"NVM_BIN=\$NVM_BIN\"";
 
         $process = $this->execute->passThroughProcess(
             Process::fromShellCommandline($cmd, $this->moodle->directory, null, null, null)
