@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
 ## [Unreleased]
+### Fixed
+- Adjust filter plugin validation requirements to comply with Moodle 4.5
+
 ## [4.5.4] - 2024-08-23
 ### Changed
 - Fixed nvm loading issue caused by upstream regression.
