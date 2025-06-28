@@ -57,7 +57,6 @@ jobs:
 
   citest:
     name: Integration tests
-    needs: selftest
     runs-on: ubuntu-22.04
 
     services:
@@ -76,29 +75,9 @@ jobs:
       matrix:
         include:
           - php: '8.4'
+            moodle-branch: 'MDL-83424-main'
+          - php: '8.4'
             moodle-branch: 'main'
-            moodle-app: 'true'
-          - php: '8.3'
-            moodle-branch: 'MOODLE_405_STABLE'
-            moodle-app: 'true'
-          - php: '8.3'
-            moodle-branch: 'MOODLE_404_STABLE'
-            moodle-app: 'true'
-          - php: '8.2'
-            moodle-branch: 'MOODLE_403_STABLE'
-            moodle-app: 'true'
-          - php: '8.2'
-            moodle-branch: 'MOODLE_402_STABLE'
-            moodle-app: 'true'
-          - php: '8.1'
-            moodle-branch: 'MOODLE_401_STABLE'
-            moodle-app: 'true'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_400_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_311_STABLE'
-          - php: '7.4'
-            moodle-branch: 'MOODLE_39_STABLE'
 
     steps:
     - name: Check out repository code
@@ -130,6 +109,7 @@ jobs:
       run: moodle-plugin-ci install -vvv
       env:
         DB: 'pgsql'
+        MOODLE_REPO: https://github.com/kabalin/moodle.git
         MOODLE_BRANCH: ${{ matrix.moodle-branch }}
         IGNORE_PATHS: 'ignore'
         IGNORE_NAMES: 'ignore_name.php'
@@ -150,14 +130,13 @@ jobs:
         moodle-plugin-ci mustache
         moodle-plugin-ci grunt || [[ "$MOODLE_BRANCH" =~ MOODLE_3[0-9]+_STABLE ]] # Fixtures only compatible with Moodle >= 4.0
         moodle-plugin-ci phpdoc
-        moodle-plugin-ci phpunit --verbose --coverage-text --fail-on-warning
         moodle-plugin-ci behat --profile default
         moodle-plugin-ci behat --profile chrome --scss-deprecations
         moodle-plugin-ci behat --profile firefox --tags="@local_ci&&~@app"
+        moodle-plugin-ci phpunit --verbose --coverage-text --fail-on-warning
 
   buildphar:
     name: Build moodle-plugin-ci.phar
-    needs: selftest
     runs-on: ubuntu-22.04
 
     steps:
@@ -203,25 +182,9 @@ jobs:
         include:
           # Each supported PHP version once. That's enough.
           - php: '8.4'
+            moodle-branch: 'MDL-83424-main'
+          - php: '8.4'
             moodle-branch: 'main'
-            moodle-app: 'true'
-          - php: '8.3'
-            moodle-branch: 'MOODLE_405_STABLE'
-            moodle-app: 'true'
-          - php: '8.3'
-            moodle-branch: 'MOODLE_404_STABLE'
-            moodle-app: 'true'
-          - php: '8.2'
-            moodle-branch: 'MOODLE_403_STABLE'
-            moodle-app: 'true'
-          - php: '8.1'
-            moodle-branch: 'MOODLE_402_STABLE'
-            moodle-app: 'true'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_401_STABLE'
-            moodle-app: 'true'
-          - php: '7.4'
-            moodle-branch: 'MOODLE_400_STABLE'
 
     steps:
     - name: Check out repository code
@@ -257,6 +220,7 @@ jobs:
       run: php build/moodle-plugin-ci.phar install -vvv
       env:
         DB: 'pgsql'
+        MOODLE_REPO: https://github.com/andrewnicols/moodle.git
         MOODLE_BRANCH: ${{ matrix.moodle-branch }}
         IGNORE_PATHS: 'ignore'
         IGNORE_NAMES: 'ignore_name.php'
@@ -277,10 +241,10 @@ jobs:
         php build/moodle-plugin-ci.phar mustache
         php build/moodle-plugin-ci.phar grunt
         php build/moodle-plugin-ci.phar phpdoc
-        php build/moodle-plugin-ci.phar phpunit --verbose --coverage-text --fail-on-warning
         php build/moodle-plugin-ci.phar behat --profile default
         php build/moodle-plugin-ci.phar behat --profile chrome --scss-deprecations
         php build/moodle-plugin-ci.phar behat --profile firefox --tags="@local_ci&&~@app"
+        php build/moodle-plugin-ci.phar phpunit --verbose --coverage-text --fail-on-warning
 
   selfupdatetest:
     name: SelfUpdate tests (PHAR)
